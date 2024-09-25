@@ -1,0 +1,29 @@
+{
+  "name": "swift-refactor",
+  "version": "1.0.0",
+  "description": "A service using multi-agent and user collaboration for code optimization and refactoring. Help users reduce 100x code refactoring time.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests",
+    "lib": "scripts",
+    "bin": "dist/bin",
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "node tests/index.js",
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "llm",
+    "refactor",
+    "code",
+    "optimization",
+    "service"
+  ],
+  "author": "tempest.ren",
+  "license": "MIT",
+  "devDependencies": {
+    "repopack": "^0.1.37"
+  }
+}
