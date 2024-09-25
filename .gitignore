@@ -1,0 +1,7 @@
+tmp/
+mocks/
+results/
+node_modules/
+coverage/
+dist/
+*.log
