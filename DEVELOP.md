@@ -74,7 +74,7 @@ Test 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` �
 
 输入参数为用户选取的所有文件列表，在`./tmp/`下创建一个临时文件夹, 使用7位id和当前系统时间(yyyy-mm-dd-hh-mm-ss)作为文件名,，将用户选取的文件列表中的文件复制到临时文件夹中，保持相对结构不变。输出临时文件夹的路径.
 
-### 使用Repopack将这些文件
+### 使用Repopack将这些文件打包
 
 #### Task Prompt
 
@@ -97,7 +97,7 @@ To exclude specific files or directories:
 repopack --ignore "**/*.log,tmp/"
 
 以下是 repopack config 的文档说明, 请参照这个文档为每次使用 repopack 生成一个 config
-# Configuration
+**Configuration**
 
 Create a `repopack.config.json` file in your project root for custom configurations.
 ```bash
@@ -146,3 +146,9 @@ Example configuration:
   }
 }
 ```
+
+### 使用gpt优化prompt并分解任务
+
+#### Task Prompt
+创建一个function, 输入参数为字符串, 表示用户的任务指令, 一般是解释代码, 重构代码等, 调用OpenAI API, 来优化用户输入的指令为更好的prompt, 并且尽可能分解任务, 返回分解的任务和优化过的 prompt. gpt 的返回应该使用 json 格式.
+
