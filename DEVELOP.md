@@ -17,7 +17,7 @@
 10. 重复步骤2-9直到任务完成
 11. 用户接受重构结构, git agent通过 git 操作来提出 commit 并更新分支到远程代码库
 
-在整个 pipeline 的开发过程中, 我将使用 node.js, 并且使用 Vite, React, TypeScript, Tailwindcss 来完成 pipeline UI 的开发.
+在整个 pipeline 的开发过程中, 我将使用 ESM node.js, 并且使用 Vite, React, TypeScript, Tailwindcss 来完成 pipeline UI 的开发.
 
 
 ### 写脚本代码的基础Prompt
@@ -30,13 +30,13 @@
 ```
 README.md
 ├── scripts
-    ├── scriptxxx.js
+    ├── scriptxxx.mjs
 ├── tests
-    ├── testxxx.js
+    ├── testxxx.mjs
 ```
 对于涉及文件操作的任务, 你需要参考当前文件结构. 你可以新建文件夹, 删除文件夹, 访问现有的文件夹. 如果一个文件或文件夹在操作时不存在, 你需要创建这个文件或文件夹防止出现错误.
 
-对于每一个任务, 你应该新建一个 node.js 脚本文件来实现此功能, 这个脚本文件放在`/scripts`下, 该函数应该作为文件的默认函数导出. 在必要时使用 console 来输出 error 信息. 禁止使用 deprecated API.
+对于每一个任务, 你应该新建一个ESM node.js 脚本文件来实现此功能, 这个脚本文件放在`/scripts`下, 该函数应该作为文件的默认函数导出. 在必要时使用 console 来输出 error 信息. 禁止使用 deprecated API. 使用 ESM 语法, 在引入依赖时考虑依赖对 ESM 的支持.
 
 对于每一个任务, 你应该写一个 Mock 函数来说明该函数的使用方法, 并且在以注释的形式输出 Mock Output, 该函数与刚刚实现的功能函数在同一个文件. Mock中涉及的文件操作应该放到`/mocks`下, 无需清理, Mock 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` 任务, Mock 文件夹可以为`mocklistFile`.
 Mock 部分的格式如下:
@@ -66,6 +66,8 @@ Test 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` �
 
 根据输入的路径作为函数的参数, 读取对应的文件夹, 分析并列出其中所有文件的类型, 输出按照文件类型分类的文件列表.
 
+-------
+
 ### 用户确认需要重构的文件
 
 ### 创建临时文件夹, 保持相对结构不变的情况下将这些文件移动到新建的临时文件夹
@@ -73,6 +75,8 @@ Test 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` �
 #### Task Prompt
 
 输入参数为用户选取的所有文件列表，在`./tmp/`下创建一个临时文件夹, 使用7位id和当前系统时间(yyyy-mm-dd-hh-mm-ss)作为文件名,，将用户选取的文件列表中的文件复制到临时文件夹中，保持相对结构不变。输出临时文件夹的路径.
+
+-------
 
 ### 使用Repopack将这些文件打包
 
@@ -147,8 +151,31 @@ Example configuration:
 }
 ```
 
+-------
+
 ### 使用gpt优化prompt并分解任务
 
 #### Task Prompt
 创建一个function, 输入参数为字符串, 表示用户的任务指令, 一般是解释代码, 重构代码等, 调用OpenAI API, 来优化用户输入的指令为更好的prompt, 并且尽可能分解任务, 返回分解的任务和优化过的 prompt. gpt 的返回应该使用 json 格式.
+
+-------
+
+抽象一个方法到util里, 来使用 fetch 函数发起 gpt request, 接受参数 requestParams 来配置 model 等参数, 并且异步返回 response. 
+API key 从 env 中读取. 这个方法应该保持可扩展性, 用于将来接入其他llm 服务商, 比如 claude, genmini, deepseek等.
+同样的, 为这个方法创建Unit Test, 在测试环境中, 应该使用 mock 请求而不是真实的 model response. 将 mock 中使用到的model response单独存放在 /mocks 下.
+
+#### Follow up
+
+我注意到你使用了 node-fetch, 而 node-fetch@3.x 只支持esm, 所以我已经将之前生成的文件都改为了 .mjs, 在`package.json`中添加了`"type": "module"`, 并且将 require替换为 import 语法, 将 module.export 替换为 export defualt 语法. 接下来生成的 scripts, tests 都应该是 ESM 格式的.
+你还使用到了Jest, 所以我通过 `npm install --save-dev jest` 安装了 jest, 并且配置了`package.json`中的 `scripts: { "test": "jest" }`, 新添加了jest.config.js文件, 配置内容为: 
+```
+module.exports = {
+    testEnvironment: 'node',
+    transform: {},
+    testMatch: ['<rootDir>/tests/*.[jm]js'], // 匹配 /tests/ 下的 .js 和 .mjs 的测试文件
+};
+```
+
+请帮我将之前的测试用例都更改成 jest 格式的, 你需要更改: `testCopySelectedFilesToTemp.mjs`, `testListFilesByType.mjs`, `testLLMRequestUtil.mjs`, `testOptimizeTask.mjs`, `testPackFilesWithRepopack.mjs`.
+
 

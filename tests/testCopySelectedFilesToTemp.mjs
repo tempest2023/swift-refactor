@@ -1,10 +1,9 @@
-// /tests/testPackFilesWithRepopack.js
-// 该文件的功能是先通过 copySelectedFilesToTemp 将文件复制到临时文件夹，然后再使用 packFilesWithRepopack 打包，并验证输出结果。
+// /tests/testCopySelectedFilesToTemp.js
+// 该文件的功能是测试 copySelectedFilesToTemp.js 文件中的功能函数，验证文件是否正确复制到临时文件夹中，并清理测试环境。
 
-const fs = require('fs');
-const path = require('path');
-const packFilesWithRepopack = require('../scripts/packFilesWithRepopack');
-const copySelectedFilesToTemp = require('../scripts/copySelectedFilesToTemp');
+import fs from 'fs';
+import path from 'path';
+import copySelectedFilesToTemp from '../scripts/copySelectedFilesToTemp.mjs';
 
 /**
  * 创建测试文件夹并生成一些测试文件
@@ -24,7 +23,6 @@ function createTestEnvironment(folderPath) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(filePath, `Content of ${file}`);
-    console.log(`创建测试文件: ${filePath}`);
   });
 }
 
@@ -47,36 +45,35 @@ function cleanTestEnvironment(folderPath) {
 }
 
 /**
- * 测试函数，验证 packFilesWithRepopack 是否正确执行
+ * 测试函数，验证 copySelectedFilesToTemp 是否正确执行
  */
-function testPackFilesWithRepopack() {
-  const testFolderPath = './mocks/testPackFiles'; // 测试文件夹路径
+function testCopySelectedFilesToTemp() {
+  const testFolderPath = './mocks/testCopyFilesToTemp'; // 测试文件夹路径
 
   // 创建测试环境
   createTestEnvironment(testFolderPath);
 
-  // 使用 copySelectedFilesToTemp 模拟将文件复制到临时文件夹
-  const tempFolder = copySelectedFilesToTemp([path.join(testFolderPath, 'test1.txt'), path.join(testFolderPath, 'subfolder/test2.js')]);
+  const fileList = [
+    path.join(testFolderPath, 'test1.txt'),
+    path.join(testFolderPath, 'subfolder/test2.js')
+  ];
 
-  // 调用功能函数打包临时文件夹
-  const outputFilePath = packFilesWithRepopack(tempFolder);
+  // 调用功能函数
+  const tempFolderPath = copySelectedFilesToTemp(fileList);
 
-  // 验证输出文件夹是否存在
-  const result = fs.existsSync(outputFilePath);
+  // 验证文件是否复制成功
+  const result = fs.existsSync(tempFolderPath) && fs.existsSync(path.join(tempFolderPath, 'test1.txt')) && fs.existsSync(path.join(tempFolderPath, 'subfolder/test2.js'));
 
   if (result) {
-    console.log('[✅] packFilesWithRepopack 功能测试通过');
+    console.log('[✅] copySelectedFilesToTemp 功能测试通过');
   } else {
-    console.log('[❌] packFilesWithRepopack 功能测试失败');
+    console.log('[❌] copySelectedFilesToTemp 功能测试失败');
   }
 
   // 清理测试环境
-  if (fs.existsSync(outputFilePath)) {
-    fs.unlinkSync(outputFilePath);
-  }
-  cleanTestEnvironment(tempFolder);
+  cleanTestEnvironment(tempFolderPath);
   cleanTestEnvironment(testFolderPath);
 }
 
 // 运行测试
-testPackFilesWithRepopack();
+testCopySelectedFilesToTemp();

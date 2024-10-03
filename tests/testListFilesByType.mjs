@@ -2,9 +2,9 @@
 // 该文件的功能是测试 listFilesByType.js 文件中的功能函数，检查是否正确分类文件。
 // 文件操作基于 /mocks 文件夹，测试完成后会清理创建的文件和文件夹。
 
-const fs = require('fs');
-const path = require('path');
-const listFilesByType = require('../scripts/listFilesByType');
+import fs from 'fs';
+import path from 'path';
+import listFilesByType from '../scripts/listFilesByType.mjs';
 
 /**
  * 创建测试文件夹并生成一些测试文件

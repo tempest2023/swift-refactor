@@ -2,8 +2,8 @@
 // 该文件的功能是根据输入的路径读取文件夹中的所有文件，并根据文件类型分类输出文件列表。
 // 如果文件夹不存在，则会报错而不是创建文件夹。
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 /**
  * 根据输入的路径，列出文件夹中所有文件的类型，并返回按类型分类的文件列表
@@ -80,4 +80,4 @@ function mockListFilesByType() {
 }
 */
 
-module.exports = listFilesByType;
+export default listFilesByType;

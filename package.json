@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A service using multi-agent and user collaboration for code optimization and refactoring. Help users reduce 100x code refactoring time.",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "test": "tests",
     "lib": "scripts",
@@ -10,7 +11,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "node tests/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node index.js",
     "dev": "node index.js"
   },
@@ -24,6 +25,11 @@
   "author": "tempest.ren",
   "license": "MIT",
   "devDependencies": {
+    "jest": "^29.7.0",
     "repopack": "^0.1.37"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "node-fetch": "^3.3.2"
   }
 }

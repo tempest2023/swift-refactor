@@ -2,11 +2,11 @@
 // 该文件的功能是动态生成一个 repopack.config.json 文件并调用 Repopack 工具对给定的临时文件夹进行打包，
 // 将结果保存到一个文件中，并返回这个文件的路径。
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { execSync } = require('child_process');
-const copySelectedFilesToTemp = require('./copySelectedFilesToTemp');
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { execSync } from 'child_process';
+import copySelectedFilesToTemp from './copySelectedFilesToTemp.mjs';
 
 /**
  * 动态生成 repopack.config.json 配置文件，用于优化代码重构
@@ -137,7 +137,7 @@ function mockPackFilesWithRepopack() {
 }
 
 // 取消注释以运行 mock 函数
-// mockPackFilesWithRepopack();
+mockPackFilesWithRepopack();
 // Mock Output:
 /*
 创建输出临时文件: ./tmp/7f12eac-2024-09-25-12-30-45-repopack.txt
@@ -145,4 +145,4 @@ function mockPackFilesWithRepopack() {
 Repopack 输出文件路径: ./tmp/7f12eac-2024-09-25-12-30-45-repopack.txt
 */
 
-module.exports = packFilesWithRepopack;
+export default packFilesWithRepopack;

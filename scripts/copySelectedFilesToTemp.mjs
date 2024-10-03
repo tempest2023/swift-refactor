@@ -2,9 +2,9 @@
 // 该文件的功能是根据用户选取的文件列表，在 ./tmp/ 下创建一个临时文件夹，将这些文件复制到临时文件夹中，保持相对路径结构不变。
 // 临时文件夹的名称由7位ID和当前系统时间（yyyy-mm-dd-hh-mm-ss）构成。
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 
 /**
  * 复制用户选取的文件列表到临时文件夹，保持相对路径不变
@@ -51,4 +51,4 @@ function copySelectedFilesToTemp(fileList) {
   return tempFolder; // 返回临时文件夹路径
 }
 
-module.exports = copySelectedFilesToTemp;
+export default copySelectedFilesToTemp;
