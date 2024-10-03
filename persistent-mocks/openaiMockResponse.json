@@ -1,0 +1,14 @@
+{
+    "id": "cmpl-12345",
+    "object": "text_completion",
+    "created": 1689999999,
+    "model": "gpt-3.5-turbo",
+    "choices": [
+        {
+            "text": "This is a mock response from OpenAI's GPT model for testing purposes.",
+            "index": 0,
+            "logprobs": null,
+            "finish_reason": "stop"
+        }
+    ]
+}

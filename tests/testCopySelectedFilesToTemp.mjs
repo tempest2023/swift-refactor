@@ -1,79 +1,52 @@
-// /tests/testCopySelectedFilesToTemp.js
-// 该文件的功能是测试 copySelectedFilesToTemp.js 文件中的功能函数，验证文件是否正确复制到临时文件夹中，并清理测试环境。
+// /tests/testCopySelectedFilesToTemp.mjs
+// 该文件的功能是测试 copySelectedFilesToTemp 函数，验证文件是否正确复制到临时文件夹。
 
+import copySelectedFilesToTemp from '../scripts/copySelectedFilesToTemp.mjs';
 import fs from 'fs';
 import path from 'path';
-import copySelectedFilesToTemp from '../scripts/copySelectedFilesToTemp.mjs';
 
-/**
- * 创建测试文件夹并生成一些测试文件
- * @param {string} folderPath - 测试文件夹路径
- */
-function createTestEnvironment(folderPath) {
-  if (!fs.existsSync(folderPath)) {
-    fs.mkdirSync(folderPath, { recursive: true });
-  }
+describe('copySelectedFilesToTemp', () => {
+  const testFolderPath = './mocks/testCopyFilesToTemp';
+  let tempFolder = '';
 
-  // 创建一些测试文件
-  const files = ['test1.txt', 'subfolder/test2.js'];
-  files.forEach((file) => {
-    const filePath = path.join(folderPath, file);
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+  beforeAll(() => {
+    // 创建测试环境
+    if (!fs.existsSync(testFolderPath)) {
+      fs.mkdirSync(testFolderPath, { recursive: true });
+      fs.writeFileSync(path.join(testFolderPath, 'test1.txt'), 'File 1 content');
+      fs.mkdirSync(path.join(testFolderPath, 'subfolder'), { recursive: true });
+      fs.writeFileSync(path.join(testFolderPath, 'subfolder', 'test2.js'), '// File 2 content');
+      fs.writeFileSync(path.join(testFolderPath, 'subfolder', 'test3.py'), '#File 3 content');
+      fs.writeFileSync(path.join(testFolderPath, 'subfolder', 'test4.js'), '// File 4 content');
     }
-    fs.writeFileSync(filePath, `Content of ${file}`);
   });
-}
 
-/**
- * 清理测试环境，删除临时文件夹及其内容
- * @param {string} folderPath - 测试文件夹路径
- */
-function cleanTestEnvironment(folderPath) {
-  if (fs.existsSync(folderPath)) {
-    fs.readdirSync(folderPath).forEach((file) => {
-      const filePath = path.join(folderPath, file);
-      if (fs.lstatSync(filePath).isDirectory()) {
-        cleanTestEnvironment(filePath); // 递归删除子文件夹
-      } else {
-        fs.unlinkSync(filePath); // 删除文件
-      }
-    });
-    fs.rmdirSync(folderPath); // 删除文件夹
-  }
-}
+  afterAll(() => {
+    // 清理临时文件夹和测试文件
+    if (tempFolder && fs.existsSync(tempFolder)) {
+      fs.rmSync(tempFolder, { recursive: true, force: true });
+    }
+    if (fs.existsSync(testFolderPath)) {
+      fs.rmSync(testFolderPath, { recursive: true, force: true });
+    }
+  });
 
-/**
- * 测试函数，验证 copySelectedFilesToTemp 是否正确执行
- */
-function testCopySelectedFilesToTemp() {
-  const testFolderPath = './mocks/testCopyFilesToTemp'; // 测试文件夹路径
+  test('should copy selected files to a temp directory', () => {
+    const filesToCopy = [
+      path.join(testFolderPath, 'test1.txt'),
+      path.join(testFolderPath, 'subfolder', 'test2.js'),
+    ];
 
-  // 创建测试环境
-  createTestEnvironment(testFolderPath);
+    // 执行文件复制，并保存返回的临时文件夹路径
+    tempFolder = copySelectedFilesToTemp(filesToCopy);
 
-  const fileList = [
-    path.join(testFolderPath, 'test1.txt'),
-    path.join(testFolderPath, 'subfolder/test2.js')
-  ];
+    // 验证临时文件夹是否存在
+    expect(fs.existsSync(tempFolder)).toBe(true);
+    expect(fs.existsSync(path.join(tempFolder, 'test1.txt'))).toBe(true);
+    expect(fs.existsSync(path.join(tempFolder, 'subfolder', 'test2.js'))).toBe(true);
 
-  // 调用功能函数
-  const tempFolderPath = copySelectedFilesToTemp(fileList);
-
-  // 验证文件是否复制成功
-  const result = fs.existsSync(tempFolderPath) && fs.existsSync(path.join(tempFolderPath, 'test1.txt')) && fs.existsSync(path.join(tempFolderPath, 'subfolder/test2.js'));
-
-  if (result) {
-    console.log('[✅] copySelectedFilesToTemp 功能测试通过');
-  } else {
-    console.log('[❌] copySelectedFilesToTemp 功能测试失败');
-  }
-
-  // 清理测试环境
-  cleanTestEnvironment(tempFolderPath);
-  cleanTestEnvironment(testFolderPath);
-}
-
-// 运行测试
-testCopySelectedFilesToTemp();
+    // 确保其他未复制的文件不存在于临时文件夹
+    expect(fs.existsSync(path.join(tempFolder, 'subfolder', 'test3.py'))).toBe(false);
+    expect(fs.existsSync(path.join(tempFolder, 'subfolder', 'test4.js'))).toBe(false);
+  });
+});

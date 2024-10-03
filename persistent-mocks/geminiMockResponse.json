@@ -1,0 +1,14 @@
+{
+    "id": "completion-gemini-001",
+    "object": "text_completion",
+    "created": 1689999999,
+    "model": "gemini-1.0",
+    "choices": [
+        {
+            "text": "This is a mock response from Google's Gemini model for testing purposes.",
+            "index": 0,
+            "logprobs": null,
+            "finish_reason": "stop"
+        }
+    ]
+}

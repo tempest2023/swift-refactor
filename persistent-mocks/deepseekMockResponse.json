@@ -1,0 +1,14 @@
+{
+    "id": "completion-deepseek-001",
+    "object": "text_completion",
+    "created": 1689999999,
+    "model": "deepseek-1.0",
+    "choices": [
+        {
+            "text": "This is a mock response from DeepSeek model for testing purposes.",
+            "index": 0,
+            "logprobs": null,
+            "finish_reason": "stop"
+        }
+    ]
+}

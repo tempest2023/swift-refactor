@@ -23,7 +23,7 @@
 ### 写脚本代码的基础Prompt
 
 这是你的 System Prompt, 请严格遵照它来执行你后续的任务.
-你是一个高级全栈工程师, 你将根据我的指令来编写代码, 你不需要解释代码, 但是代码应该带有必要的注释, 你的注释应该解释一段代码逻辑在做什么，以及为什么要这样做, 而不是为每一行代码都注释在做什么. 每个文件的顶部都应该带有这个文件的功能说明, 第一行是文件的绝对路径.
+你是一个高级全栈工程师, 你将根据我的指令来编写代码, 你不需要解释代码, 但是代码应该带有必要的注释, 你的注释应该解释一段代码逻辑在做什么，以及为什么要这样做, 而不是为每一行代码都注释在做什么. 每个文件的顶部都应该带有这个文件的功能说明, 第一行是文件的绝对路径. 你的代码应该尽可能简洁, 将每一部分抽象出单独的函数, 来保证主函数的逻辑尽可能简单, 保证代码的可读性和可维护性.
 以下是我的环境信息: Node v21.4.0
 
 我的项目文件结构:
@@ -55,7 +55,8 @@ function mockMoveSelectedFilesToTemp() {
 这里是你的 Mock Output
 */
 ```
-对于每一个任务, 你应该写一个测试函数放在`/tests/`下, 运行此文件即可调用刚刚实现的功能函数并测试. 对于测试是否通过应该有标准化的结果输出, 如`[✅] xxx任务 测试通过; [❌] xxx 任务 测试失败;`, 过程中无需有太多输出. 测试中涉及到的新增/删除文件操作应该是基于 mock 文件的, 不会影响现有的文件, 并且在测试完成后需要清理.
+对于每一个任务, 你应该写一个测试函数放在`/tests/`下, 测试函数使用 Jest 框架, 测试过程中不应该有额外输出. 测试中涉及到的新增/删除文件操作应该是基于 mock 文件的, 不会影响现有的文件, 并且在测试完成后需要清理.
+
 Test 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` 任务, Test 文件夹可以为`testlistFile`.
 
 ## 1. 用户选择结构化代码库(本地文件夹)
@@ -86,70 +87,7 @@ Test 过程中创建的文件夹应该和当前任务相关, 比如 `listFile` �
 结合之前开发的函数, 并开发一个新的node.js函数, 来实现这个功能, 输入参数为临时文件夹的路径, 将 Repopack 的输出文件保存在一个临时文件夹下, 并且返回这个文件夹的路径.
 
 这里是Repopack的使用说明: https://github.com/yamadashy/repopack
-
-To pack your entire repository:
-
-repopack
-To pack a specific directory:
-
-repopack path/to/directory
-To pack specific files or directories using glob patterns:
-
-repopack --include "src/**/*.ts,**/*.md"
-To exclude specific files or directories:
-
-repopack --ignore "**/*.log,tmp/"
-
-以下是 repopack config 的文档说明, 请参照这个文档为每次使用 repopack 生成一个 config
-**Configuration**
-
-Create a `repopack.config.json` file in your project root for custom configurations.
-```bash
-repopack --init
-```
-
-Here's an explanation of the configuration options:
-
-| Option | Description | Default |
-|--------|-------------|---------|
-|`output.filePath`| The name of the output file | `"repopack-output.txt"` |
-|`output.style`| The style of the output (`plain`, `xml`) |`"plain"`|
-|`output.headerText`| Custom text to include in the file header |`null`|
-|`output.instructionFilePath`| Path to a file containing detailed custom instructions |`null`|
-|`output.removeComments`| Whether to remove comments from supported file types | `false` |
-|`output.removeEmptyLines`| Whether to remove empty lines from the output | `false` |
-|`output.showLineNumbers`| Whether to add line numbers to each line in the output |`false`|
-|`output.topFilesLength`| Number of top files to display in the summary. If set to 0, no summary will be displayed |`5`|
-|`include`| Patterns of files to include (using glob syntax) |`[]`|
-|`ignore.useGitignore`| Whether to use patterns from the project's `.gitignore` file |`true`|
-|`ignore.useDefaultPatterns`| Whether to use default ignore patterns |`true`|
-|`ignore.customPatterns`| Additional patterns to ignore (using glob patterns) |`[]`|
-|`security.enableSecurityCheck`| Whether to perform security checks on files |`true`|
-
-Example configuration:
-
-```json
-{
-  "output": {
-    "filePath": "repopack-output.xml",
-    "style": "xml",
-    "headerText": "Custom header information for the packed file.",
-    "removeComments": false,
-    "removeEmptyLines": false,
-    "showLineNumbers": false,
-    "topFilesLength": 5
-  },
-  "include": ["**/*"],
-  "ignore": {
-    "useGitignore": true,
-    "useDefaultPatterns": true,
-    "customPatterns": ["additional-folder", "**/*.log"]
-  },
-  "security": {
-    "enableSecurityCheck": true
-  }
-}
-```
+/* Copy README of Repopack */
 
 -------
 
@@ -178,4 +116,28 @@ module.exports = {
 
 请帮我将之前的测试用例都更改成 jest 格式的, 你需要更改: `testCopySelectedFilesToTemp.mjs`, `testListFilesByType.mjs`, `testLLMRequestUtil.mjs`, `testOptimizeTask.mjs`, `testPackFilesWithRepopack.mjs`.
 
+---------
 
+重写 taskOptimizer 函数, 使用 `/utils/llmRequestUtil.mjs` 实现, 这里是原来的代码
+/* Copy taskOptimizer.mjs 代码 */
+
+---------
+
+修改 llmRequestUtil 代码, 在 test 和 mock 模式不发送真实请求, 而是读取 mock 数据返回. 这里的 mock 数据放在`/persistent-mocks/`下, 应该包含各个 provider 的 response 数据. 这里是llmRequestUtil原来的代码:
+/* llmRequestUtil 原来的代码 */
+
+---------
+
+给出几个 provider 的 mocks 文件
+
+---------
+
+根据修改后的llmRequestUtil.mjs, 重写生成对应的 test 文件
+
+----------
+
+阅读以下逻辑, 写一行代码, 将 outputFile 转换为 logFile
+```
+const logFile = path.resolve(resultDir, `${id}-${timestamp}-log.log`)
+const outputFile = path.resolve(resultDir, `${id}-${timestamp}-repopack.xml`);
+```

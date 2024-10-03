@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { execSync } from 'child_process';
+import { isProdNodeEnv } from '../utils/envInfo.mjs';
 import copySelectedFilesToTemp from './copySelectedFilesToTemp.mjs';
 
 /**
@@ -94,6 +95,7 @@ function packFilesWithRepopack(sourceFolderPath) {
   // 生成唯一ID和当前时间作为输出文件名
   const id = crypto.randomBytes(4).toString('hex');
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const logFile = path.resolve(resultDir, `${id}-${timestamp}-log.log`)
   const outputFile = path.resolve(resultDir, `${id}-${timestamp}-repopack.xml`);
 
   // 生成 Repopack 配置文件
@@ -101,8 +103,10 @@ function packFilesWithRepopack(sourceFolderPath) {
 
   // 使用 child_process.execSync 调用 repopack 对源文件夹进行打包，不需要 --output 参数
   try {
-    const command = `npx repopack ${sourceFolderPath} --config ${configFilePath}`;
-    console.log(`[🚀]运行命令: ${command}`);
+    const command = `npx repopack ${sourceFolderPath} --config ${configFilePath} > ${logFile}`;
+    if (!isProdNodeEnv()) {
+      console.log(`[🚀]运行命令: ${command}`);
+    }
     execSync(command, { stdio: 'inherit' });
   } catch (error) {
     console.error(`运行 Repopack 失败: ${error.message}`);
@@ -137,7 +141,7 @@ function mockPackFilesWithRepopack() {
 }
 
 // 取消注释以运行 mock 函数
-mockPackFilesWithRepopack();
+// mockPackFilesWithRepopack();
 // Mock Output:
 /*
 创建输出临时文件: ./tmp/7f12eac-2024-09-25-12-30-45-repopack.txt
